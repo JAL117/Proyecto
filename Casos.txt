@@ -1,0 +1,64 @@
+CASOS_CORRECTOS = [
+    """
+    start
+    int x = 10;
+    string s = "3.3";
+    show("El valor de x es: ", x);
+    show("El valor de s es: ", s);
+    end
+    """,
+    """
+    start
+    int i = 0;
+    for (i = 0; i less_than 3; increment(1)):
+        show(i);
+    stop
+    end
+    """,
+    """
+    start
+    string oper = "";
+    int num = 0;
+    show("Ingrese un número");
+    get(num);
+    int doble = num multiply 2;
+    show("El doble es: ", doble);
+    end
+    """,
+]
+
+CASOS_INCORRECTOS = [
+    """
+    start
+    int x = 10
+    show(x)
+    end
+    """,
+    """
+    start
+    int a = 5;
+    if (a plus 5):
+        show(a);
+    end
+    """,
+    """
+    start
+    int i = 0;
+    for (i = 0; i less_than 3; increment(1)):
+        show(i);
+    end
+    """,
+    """
+    start
+    int x = "texto";
+    show(x);
+    end
+    """,
+    """
+    start
+    int a = 5;
+    if (a equal 5)
+    show(a);
+    end
+    """
+]
