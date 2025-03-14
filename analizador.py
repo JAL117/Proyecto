@@ -15,8 +15,8 @@ TABLA_LL1 = {
         "$": []
     },
     "Declaration": {
-        "declare": ["declare", "identifier", "=", "number", ";"],
-        "int": ["int", "identifier", "=", "number", ";"],
+        "declare": ["declare", "identifier", "=", "ArithmeticExpression", ";"],
+        "int": ["int", "identifier", "=", "ArithmeticExpression", ";"],
         "string": ["string", "identifier", "=", "string_literal", ";"]
     },
     "Block": {
@@ -25,33 +25,30 @@ TABLA_LL1 = {
         "if": ["Statement", "Block"],
         "for": ["Statement", "Block"],
         "identifier": ["Statement", "Block"],
-        "declare": ["Statement", "Block"],
-        "int": ["Statement", "Block"],
-        "string": ["Statement", "Block"],  
+        "declare": ["Declaration", "Block"],
+        "int": ["Declaration", "Block"],
+        "string": ["Declaration", "Block"],
         "end": [],
         "else": [],
         "stop": [],
         "$": []
     },
-   "NonEmptyBlock": {
-       "show": ["Statement", "Block"],
-       "get": ["Statement", "Block"],
-       "if": ["Statement", "Block"],
-       "for": ["Statement", "Block"],
-       "identifier": ["Statement", "Block"],
-       "declare": ["Statement", "Block"],
-       "int": ["Statement", "Block"],
-       "string": ["Statement", "Block"]
+    "NonEmptyBlock": {
+        "show": ["Statement", "Block"],
+        "get": ["Statement", "Block"],
+        "if": ["Statement", "Block"],
+        "for": ["Statement", "Block"],
+        "identifier": ["Statement", "Block"],
+        "declare": ["Declaration", "Block"],
+        "int": ["Declaration", "Block"],
+        "string": ["Declaration", "Block"]
     },
     "Statement": {
         "show": ["show", "(", "Arguments", ")", ";"],
         "get": ["get", "(", "Arguments", ")", ";"],
         "if": ["Conditional"],
         "for": ["Loop"],
-        "identifier": ["Assignment", ";"],
-        "declare": ["Assignment", ";"],
-        "int": ["Assignment", ";"],
-        "string": ["Assignment", ";"]
+        "identifier": ["Assignment", ";"]
     },
     "Arguments": {
         "string_literal": ["Argument", "ArgumentsPrime"],
@@ -72,24 +69,24 @@ TABLA_LL1 = {
         "(": ["ArithmeticExpression"]
     },
     "Conditional": {
-    "if": ["if", "(", "Condition", ")", ":", "NonEmptyBlock", "OptionalElse"]
+        "if": ["if", "(", "Condition", ")", ":", "NonEmptyBlock", "OptionalElse"]
     },
     "OptionalElse": {
-    "else": ["else", ":", "Block"],
-    "show": [],
-    "get": [],
-    "if": [],
-    "for": [],
-    "identifier": [],
-    "declare": [],
-    "int": [],
-    "string": [],
-    "end": [],
-    "stop": [],
-    "$": []
+        "else": ["else", ":", "Block"],
+        "show": [],
+        "get": [],
+        "if": [],
+        "for": [],
+        "identifier": [],
+        "declare": [],
+        "int": [],
+        "string": [],
+        "end": [],
+        "stop": [],
+        "$": []
     },
     "Condition": {
-        "identifier": ["identifier", "ComparisonOperator", "ConditionValue"]
+        "identifier": ["ArithmeticExpression", "ComparisonOperator", "ArithmeticExpression"]
     },
     "ConditionValue": {
         "string_literal": ["string_literal"],
@@ -107,10 +104,10 @@ TABLA_LL1 = {
         "identifier": ["identifier", "=", "ArithmeticExpression"],
         "declare": ["declare", "identifier", "=", "ArithmeticExpression"],
         "int": ["int", "identifier", "=", "ArithmeticExpression"],
-        "string": ["string", "identifier", "=", "ArithmeticExpression"]
+        "string": ["string", "identifier", "=", "string_literal"]  # No ArithmeticExpression here
     },
     "Increment": {
-        "increment": ["increment", "(", "number", ")"]
+        "increment": ["increment", "(", "ArithmeticExpression", ")"]
     },
     "ArithmeticExpression": {
         "identifier": ["Term", "ArithmeticExpressionPrime"],
@@ -123,7 +120,13 @@ TABLA_LL1 = {
         "minus": ["minus", "Term", "ArithmeticExpressionPrime"],
         ")": [],
         ";": [],
-        "comma": []
+        "comma": [],
+        "equal": [],
+        "not_equal": [],
+        "less_than": [],
+        "less_or_equal": [],
+        "greater_than": [],
+        "greater_or_equal": []
     },
     "Term": {
         "identifier": ["Factor", "TermPrime"],
@@ -138,7 +141,13 @@ TABLA_LL1 = {
         "minus": [],
         ")": [],
         ";": [],
-        "comma": []
+        "comma": [],
+        "equal": [],
+        "not_equal": [],
+        "less_than": [],
+        "less_or_equal": [],
+        "greater_than": [],
+        "greater_or_equal": []
     },
     "Factor": {
         "(": ["(", "ArithmeticExpression", ")"],
@@ -146,7 +155,7 @@ TABLA_LL1 = {
         "number": ["number"],
         "float_number": ["float_number"]
     },
-    "ComparisonOperator":{
+    "ComparisonOperator": {
         "equal": ["equal"],
         "not_equal": ["not_equal"],
         "less_than": ["less_than"],
@@ -174,11 +183,11 @@ TOKENS_SINCRONIZACION = {
     "Loop": [":", "stop", "end", "show", "get", "if", "for", "identifier", "$"],
     "Assignment": [";", "end", "else", "stop", "$"],
     "Increment": [")", ";", "$"],
-    "ArithmeticExpression": [")", ";", "comma", "$"],
-    "ArithmeticExpressionPrime": [")", ";", "comma", "$"],
-    "Term": ["plus", "minus", ")", ";", "comma", "$"],
-    "TermPrime": ["plus", "minus", ")", ";", "comma", "$"],
-    "Factor": ["multiply", "divide", "plus", "minus", ")", ";", "comma", "$"],
+    "ArithmeticExpression": [")", ";", "comma", "$", ":"],
+    "ArithmeticExpressionPrime": [")", ";", "comma", "$", ":", "equal", "not_equal", "less_than", "less_or_equal", "greater_than", "greater_or_equal"],
+    "Term": ["plus", "minus", ")", ";", "comma", "$", ":", "equal", "not_equal", "less_than", "less_or_equal", "greater_than", "greater_or_equal"],
+    "TermPrime": ["plus", "minus", ")", ";", "comma", "$", ":", "equal", "not_equal", "less_than", "less_or_equal", "greater_than", "greater_or_equal"],
+    "Factor": ["multiply", "divide", "plus", "minus", ")", ";", "comma", "$", ":", "equal", "not_equal", "less_than", "less_or_equal", "greater_than", "greater_or_equal"],
     "ComparisonOperator": [")", ";", ":", "$"]
 }
 
@@ -244,10 +253,10 @@ CASOS_CORRECTOS = [
     int num = 0;
     show("Ingrese un número");
     get(num);
-    int doble = num multiply 2;
+    int doble = 2;
     show("El doble es: ", doble);
     end
-    """,
+    """
 ]
 
 CASOS_INCORRECTOS = [
@@ -292,15 +301,15 @@ def lexer(entrada):
     i = 0
     linea = 1
     columna = 1
-    posiciones = []  
-    
+    posiciones = []
+
     while i < len(entrada):
         char = entrada[i]
-        
+
         if char == '\n':
             linea += 1
             columna = 1
-        
+
         if char.isspace():
             if char == '\n':
                 linea += 1
@@ -309,121 +318,120 @@ def lexer(entrada):
                 columna += 1
             i += 1
             continue
-        
+
         token_pos = (linea, columna)
-        
-        if entrada[i:i+5].lower() == "start":
+
+        if entrada[i:i + 5].lower() == "start":
             tokens.append("start")
             posiciones.append(token_pos)
             i += 5
             columna += 5
-        elif entrada[i:i+3].lower() == "end":
+        elif entrada[i:i + 3].lower() == "end":
             tokens.append("end")
             posiciones.append(token_pos)
             i += 3
             columna += 3
-        elif entrada[i:i+7].lower() == "declare":
+        elif entrada[i:i + 7].lower() == "declare":
             tokens.append("declare")
             posiciones.append(token_pos)
             i += 7
             columna += 7
-        elif entrada[i:i+3].lower() == "int":
+        elif entrada[i:i + 3].lower() == "int":
             tokens.append("int")
             posiciones.append(token_pos)
             i += 3
             columna += 3
-        elif entrada[i:i+6].lower() == "string":
+        elif entrada[i:i + 6].lower() == "string":
             tokens.append("string")
             posiciones.append(token_pos)
             i += 6
             columna += 6
-        elif entrada[i:i+4].lower() == "show":
+        elif entrada[i:i + 4].lower() == "show":
             tokens.append("show")
             posiciones.append(token_pos)
             i += 4
             columna += 4
-        elif entrada[i:i+3].lower() == "get":
+        elif entrada[i:i + 3].lower() == "get":
             tokens.append("get")
             posiciones.append(token_pos)
             i += 3
             columna += 3
-        elif entrada[i:i+2].lower() == "if":
+        elif entrada[i:i + 2].lower() == "if":
             tokens.append("if")
             posiciones.append(token_pos)
             i += 2
             columna += 2
-        elif entrada[i:i+4].lower() == "else":
+        elif entrada[i:i + 4].lower() == "else":
             tokens.append("else")
             posiciones.append(token_pos)
             i += 4
             columna += 4
-        elif entrada[i:i+3].lower() == "for":
+        elif entrada[i:i + 3].lower() == "for":
             tokens.append("for")
             posiciones.append(token_pos)
             i += 3
             columna += 3
-        elif entrada[i:i+9].lower() == "increment":
+        elif entrada[i:i + 9].lower() == "increment":
             tokens.append("increment")
             posiciones.append(token_pos)
             i += 9
             columna += 9
-        elif entrada[i:i+4].lower() == "stop":
+        elif entrada[i:i + 4].lower() == "stop":
             tokens.append("stop")
             posiciones.append(token_pos)
             i += 4
             columna += 4
-        elif entrada[i:i+5].lower() == "plus":
+        elif entrada[i:i + 4].lower() == "plus":
             tokens.append("plus")
             posiciones.append(token_pos)
             i += 4
             columna += 4
-        elif entrada[i:i+5].lower() == "minus":
+        elif entrada[i:i + 5].lower() == "minus":
             tokens.append("minus")
             posiciones.append(token_pos)
             i += 5
             columna += 5
-        elif entrada[i:i+8].lower() == "multiply":
+        elif entrada[i:i + 8].lower() == "multiply":
             tokens.append("multiply")
             posiciones.append(token_pos)
             i += 8
             columna += 8
-        elif entrada[i:i+6].lower() == "divide":
-            tokens.append("divide")
+        elif entrada[i:i + 6].lower() == "divide":
             tokens.append("divide")
             posiciones.append(token_pos)
             i += 6
             columna += 6
-        elif entrada[i:i+5].lower() == "equal":
+        elif entrada[i:i + 5].lower() == "equal":
             tokens.append("equal")
             posiciones.append(token_pos)
             i += 5
             columna += 5
-        elif entrada[i:i+9].lower() == "not_equal":
+        elif entrada[i:i + 9].lower() == "not_equal":
             tokens.append("not_equal")
             posiciones.append(token_pos)
             i += 9
             columna += 9
-        elif entrada[i:i+9].lower() == "less_than":
+        elif entrada[i:i + 9].lower() == "less_than":
             tokens.append("less_than")
             posiciones.append(token_pos)
             i += 9
             columna += 9
-        elif entrada[i:i+12].lower() == "less_or_equal":
+        elif entrada[i:i + 12].lower() == "less_or_equal":
             tokens.append("less_or_equal")
             posiciones.append(token_pos)
             i += 12
             columna += 12
-        elif entrada[i:i+11].lower() == "greater_than":
+        elif entrada[i:i + 11].lower() == "greater_than":
             tokens.append("greater_than")
             posiciones.append(token_pos)
             i += 11
             columna += 11
-        elif entrada[i:i+14].lower() == "greater_or_equal":
+        elif entrada[i:i + 14].lower() == "greater_or_equal":
             tokens.append("greater_or_equal")
             posiciones.append(token_pos)
             i += 14
             columna += 14
-        elif entrada[i:i+2].lower() == "or":
+        elif entrada[i:i + 2].lower() == "or":
             tokens.append("or")
             posiciones.append(token_pos)
             i += 2
@@ -453,7 +461,7 @@ def lexer(entrada):
             posiciones.append(token_pos)
             i += 1
             columna += 1
-        elif char == ",": 
+        elif char == ",":
             tokens.append("comma")
             posiciones.append(token_pos)
             i += 1
@@ -487,7 +495,7 @@ def lexer(entrada):
             j = i
             while j < len(entrada) and (entrada[j].isalnum() or entrada[j] == "_"):
                 j += 1
-            if j > i:  
+            if j > i:
                 tokens.append("identifier")
                 posiciones.append(token_pos)
                 columna += (j - i)
@@ -497,7 +505,7 @@ def lexer(entrada):
                 posiciones.append(token_pos)
                 i += 1
                 columna += 1
-    
+
     tokens.append("$")
     posiciones.append((linea, columna))
     return tokens, posiciones
@@ -505,47 +513,47 @@ def lexer(entrada):
 def analizar_entrada(entrada):
     tokens, posiciones = lexer(entrada)
     print(f"Tokens generados: {tokens}")
-    
+
     errores = []
-    
+
     pila = ["$", "Program"]
     indice = 0
-    max_iteraciones = 1000  
-    
+    max_iteraciones = 1000
+
     iteraciones = 0
     recuperando = False
-    contexto_actual = "Program" 
-    
+    contexto_actual = "Program"
+
     def sincronizar():
         nonlocal indice, recuperando, contexto_actual
-        
+
         tokens_sincronizacion = TOKENS_SINCRONIZACION.get(contexto_actual, [";", "end", "$"])
-        
+
         while indice < len(tokens) and tokens[indice] not in tokens_sincronizacion:
             indice += 1
-            
+
         recuperando = False
         if indice < len(tokens):
             print(f"Sincronizado en token: {tokens[indice]} (índice {indice})")
-        
+
     while pila and indice < len(tokens):
         if iteraciones > max_iteraciones:
             errores.append(f"Error: Análisis detenido después de {iteraciones} iteraciones (posible bucle infinito)")
             break
-        
+
         iteraciones += 1
-        
+
         if recuperando:
             sincronizar()
             if indice >= len(tokens):
                 break
-        
+
         top = pila.pop()
         print(f"Iteración {iteraciones}: Pila={pila + [top]}, Top={top}, Token actual={tokens[indice]} (índice={indice})")
-        
+
         if top in TABLA_LL1:
             contexto_actual = top
-        
+
         if top in TABLA_LL1:
             if tokens[indice] in TABLA_LL1[top]:
                 produccion = TABLA_LL1[top][tokens[indice]]
@@ -557,41 +565,41 @@ def analizar_entrada(entrada):
             else:
                 linea, columna = posiciones[indice]
                 expected = list(TABLA_LL1[top].keys())
-                
+
                 msg_error = f"Error sintáctico en línea {linea}, columna {columna}: Token inesperado '{tokens[indice]}'"
-                
+
                 if expected:
                     nombre_amigable = NOMBRES_LEGIBLES.get(top, top)
                     msg_error += f". Se esperaba un {nombre_amigable} que comienza con: {', '.join(expected)}"
-                
+
                 if tokens[indice] in TOKENS_SUGERIDOS:
                     msg_error += f". Sugerencia: {TOKENS_SUGERIDOS[tokens[indice]]}"
-                
+
                 errores.append(msg_error)
                 print(msg_error)
-                
+
                 recuperando = True
-                
+
                 if top in TOKENS_SUGERIDOS:
-                    pila.append(top) 
+                    pila.append(top)
                     errores[-1] += f" - Insertando '{top}' implícito y continuando"
-        
+
         else:
             if top == tokens[indice]:
                 indice += 1
-                print(f"Coincidencia: {top} == {tokens[indice-1]}")
+                print(f"Coincidencia: {top} == {tokens[indice - 1]}")
             else:
                 linea, columna = posiciones[indice]
-                
+
                 msg_error = f"Error sintáctico en línea {linea}, columna {columna}: Se esperaba '{top}' pero se encontró '{tokens[indice]}'"
                 errores.append(msg_error)
                 print(msg_error)
-                
+
                 recuperando = True
-    
+
     if pila and pila != ["$"] and indice < len(tokens) - 1:
         errores.append("Error sintáctico: Código incompleto o estructura no cerrada correctamente")
-    
+
     if errores:
         return f"Código con {len(errores)} errores:\n" + "\n".join(errores)
     else:
